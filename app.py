@@ -17,3 +17,5 @@ if __name__ == '__main__':
 @app.route("/")
 def home():
     return "F1 Data API is running!"
+
+# .\venv\Scripts\activate

@@ -1,17 +1,25 @@
-from flask import Blueprint, jsonify
+"""Blueprint providing an API endpoint for current F1 driver standings using FastF1 Ergast."""
+
+from flask import Blueprint, jsonify, Response
 import fastf1
 from fastf1.ergast import Ergast
-import pprint
+from typing import Any, List, Dict
+import logging
+logging.basicConfig(level=logging.DEBUG)
 
 driver_standings_bp = Blueprint('driver_standings', __name__)
 
-def extract_driver_standings(raw_response):
+logger = logging.getLogger(__name__)
+
+def extract_driver_standings(raw_response) -> List[Dict[str, Any]]:
     """
     Return a list of driver standings dicts from a FastF1 Ergast response.
     Works with both:
       1. Old MRData JSON format
       2. New parsed list-of-dicts format
     """
+
+    # Use .content if present (newer FastF1), otherwise use raw_response directly (older format)
     data = getattr(raw_response, 'content', raw_response)
 
     # New format: list of dicts with 'DriverStandings'
@@ -27,12 +35,19 @@ def extract_driver_standings(raw_response):
             return lists[0].get('DriverStandings', [])
 
     # Unknown format
-    print(f"[WARN] Unexpected Ergast format: {type(data)} -> {repr(data)[:200]}")
+    logger.warning("Unexpected Ergast format: {type(data)} -> {repr(data)[:200]}")
     return []
 
 
 @driver_standings_bp.route('/driverstandings')
-def get_driver_standings():
+def get_driver_standings() -> Response:
+    """
+    API endpoint that returns the current F1 driver standings as JSON.
+
+    Returns:
+        Flask Response object containing the season and a list of driver standings.
+    """
+
     # Enable FastF1 cache
     fastf1.Cache.enable_cache('cache')
 
@@ -40,7 +55,7 @@ def get_driver_standings():
     ergast = Ergast()
     raw_response = ergast.get_driver_standings(season='current', result_type='raw')
 
-    # Extract season
+    # Use .content if present (newer FastF1), otherwise use raw_response directly (older format)
     data = getattr(raw_response, 'content', raw_response)
     season = None
     if isinstance(data, list) and data:
@@ -49,25 +64,6 @@ def get_driver_standings():
 
     # Extract standings using the hybrid helper
     standings = extract_driver_standings(raw_response)
-
-    # Debug
-    #print("DEBUG content:")
-    #pprint.pprint(getattr(raw_response, 'content', raw_response))
-    # if standings:
-    #     print("Top-level keys in each driver entry:")
-    #     pprint.pprint(list(standings[0].keys()))
-
-    #     print("\nDriver subfields:")
-    #     pprint.pprint(list(standings[0].get('Driver', {}).keys()))
-
-    #     print("\nConstructor subfields:")
-    #     constructors = standings[0].get('Constructors', [])
-    #     if constructors:
-    #         pprint.pprint(list(constructors[0].keys()))
-    #     else:
-    #         print("No constructor data found.")
-    # else:
-    #     print("No driver standings data available.")
 
     # Transform into clean JSON
     driver_list = []
@@ -78,17 +74,31 @@ def get_driver_standings():
         constructor_name = constructors[0].get('name') if constructors else None
         
         driver_list.append({
-            "position": int(entry.get('position', 0)),
-            "points": float(entry.get('points', 0)),
-            "wins": int(entry.get('wins', 0)),
-            "driver_id": driver.get('driverId'),
-            "given_name": driver.get('givenName'),
-            "family_name": driver.get('familyName'),
-            "nationality": driver.get('nationality'),
+            "position":        int(entry.get('position', 0)),
+            "points":          float(entry.get('points', 0)),
+            "wins":            int(entry.get('wins', 0)),
+            "driver_id":       driver.get('driverId'),
+            "given_name":      driver.get('givenName'),
+            "family_name":     driver.get('familyName'),
+            "nationality":     driver.get('nationality'),
             "permanentNumber": driver.get('permanentNumber'),
-            "url": driver.get('url'),
-            "constructor": constructor_name
+            "url":             driver.get('url'),
+            "constructor":     constructor_name
         })
+
+    # Debug: log available fields/columns in the response
+    logger.debug("Raw response content keys: %s", list(data[0].keys()) if isinstance(data, list) and data else list(data.keys()) if isinstance(data, dict) else type(data))
+
+    if standings:
+        logger.debug("Top-level keys in each driver entry: %s", list(standings[0].keys()))
+        logger.debug("Driver subfields: %s", list(standings[0].get('Driver', {}).keys()))
+        constructors = standings[0].get('Constructors', [])
+        if constructors:
+            logger.debug("Constructor subfields: %s", list(constructors[0].keys()))
+        else:
+            logger.debug("No constructor data found.")
+    else:
+        logger.debug("No driver standings data available.")
 
     return jsonify({
         "season": season,

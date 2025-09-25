@@ -12,6 +12,7 @@
     <OutputPath>.</OutputPath>
     <Name>f1_data_api</Name>
     <RootNamespace>f1_microservice</RootNamespace>
+    <SuppressEnvironmentCreationPrompt>True</SuppressEnvironmentCreationPrompt>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
