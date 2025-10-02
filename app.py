@@ -3,9 +3,13 @@ from flask_cors import CORS
 from race_info import race_info_bp
 from team_standings import team_standings_bp
 from driver_standings import driver_standings_bp
+from flasgger import Swagger
 
 app = Flask(__name__)
 CORS(app)
+
+# DEV: Swagger UI for API testing -> http://localhost:5000/apidocs/
+Swagger(app)
 
 app.register_blueprint(race_info_bp)
 app.register_blueprint(team_standings_bp)
@@ -18,4 +22,4 @@ if __name__ == '__main__':
 def home():
     return "F1 Data API is running!"
 
-# .\venv\Scripts\activate
+# DEV: Activate virtual environment before running -> .\venv\Scripts\activate

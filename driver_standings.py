@@ -42,10 +42,13 @@ def extract_driver_standings(raw_response) -> List[Dict[str, Any]]:
 @driver_standings_bp.route('/driverstandings')
 def get_driver_standings() -> Response:
     """
-    API endpoint that returns the current F1 driver standings as JSON.
-
-    Returns:
-        Flask Response object containing the season and a list of driver standings.
+    Get current F1 driver standings
+    ---
+    tags:
+      - Driver Standings
+    responses:
+      200:
+        description: JSON object containing the current season and a list of driver standings
     """
 
     # Enable FastF1 cache

@@ -1,6 +1,6 @@
 """Blueprint providing an API endpoint for upcoming F1 race information using FastF1 API."""
 
-from flask import Blueprint, jsonify, Response
+from flask import Blueprint, jsonify, Response, request
 import fastf1
 from datetime import datetime, timezone, timedelta
 from typing import Any, Optional, Tuple
@@ -34,14 +34,26 @@ def extract_iso_date_and_time(
 @race_info_bp.route('/raceinfo')
 def get_f1_info() -> Response:
     """
-    API endpoint that returns information about the next F1 race as JSON.
-
-    Returns:
-        Flask Response object containing race information or a message if no race is found.
+    Get next F1 race info
+    ---
+    parameters:
+      - name: year
+        in: query
+        type: integer
+        required: false
+        default: 2025
+        description: Year of the F1 season to query
+    tags:
+      - Race Info
+    responses:
+      200:
+        description: Race details
     """
+    
     fastf1.Cache.enable_cache('cache')
 
-    schedule_df = fastf1.get_event_schedule(2025)
+    year = int(request.args.get("year", 2025))
+    schedule_df = fastf1.get_event_schedule(year)
     schedule = schedule_df.to_dict('records')
 
     logger.debug("Schedule DataFrame columns: %s", schedule_df.columns)

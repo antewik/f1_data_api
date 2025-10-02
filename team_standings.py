@@ -39,6 +39,16 @@ def extract_constructor_standings(raw_response: Any) -> List[Dict[str, Any]]:
 
 @team_standings_bp.route('/teamstandings')
 def get_team_standings() -> Response:
+    """
+    Get current F1 constructor standings
+    ---
+    tags:
+      - Team Standings
+    responses:
+      200:
+        description: JSON array containing constructor standings for the current season
+    """
+
     fastf1.Cache.enable_cache('cache')
 
     ergast = Ergast()
