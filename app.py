@@ -8,12 +8,12 @@ from flasgger import Swagger
 app = Flask(__name__)
 CORS(app)
 
-# DEV: Swagger UI for API testing -> http://localhost:5000/apidocs/
-Swagger(app)
-
 app.register_blueprint(race_info_bp)
 app.register_blueprint(team_standings_bp)
 app.register_blueprint(driver_standings_bp)
+
+# DEV: Swagger UI for API testing -> http://localhost:5000/apidocs/
+Swagger(app)
 
 if __name__ == '__main__':
     app.run(debug=True)
