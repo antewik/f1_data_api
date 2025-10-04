@@ -25,6 +25,7 @@
   <ItemGroup>
     <Compile Include="app.py" />
     <Compile Include="driver_standings.py" />
+    <Compile Include="ping.py" />
     <Compile Include="race_info.py" />
     <Compile Include="team_standings.py" />
   </ItemGroup>
