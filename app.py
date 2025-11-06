@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_cors import CORS
 from ping import ping_bp
-from race_info import race_info_bp
+from next_race import next_race_bp
 from team_standings import team_standings_bp
 from driver_standings import driver_standings_bp
 from flasgger import Swagger
@@ -11,7 +11,7 @@ CORS(app)
 
 
 app.register_blueprint(ping_bp)
-app.register_blueprint(race_info_bp)
+app.register_blueprint(next_race_bp)
 app.register_blueprint(team_standings_bp)
 app.register_blueprint(driver_standings_bp)
 

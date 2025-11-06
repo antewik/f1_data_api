@@ -10,7 +10,7 @@
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
-    <Name>f1_data_api</Name>
+    <Name>f1_info_api</Name>
     <RootNamespace>f1_microservice</RootNamespace>
     <SuppressEnvironmentCreationPrompt>True</SuppressEnvironmentCreationPrompt>
   </PropertyGroup>
@@ -25,8 +25,8 @@
   <ItemGroup>
     <Compile Include="app.py" />
     <Compile Include="driver_standings.py" />
+    <Compile Include="next_race.py" />
     <Compile Include="ping.py" />
-    <Compile Include="race_info.py" />
     <Compile Include="team_standings.py" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
