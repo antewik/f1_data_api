@@ -4,6 +4,7 @@ from flask import Blueprint, jsonify, Response, request
 import fastf1
 from datetime import datetime, timezone, timedelta
 from typing import Any, Optional, Tuple
+from datetime import date
 import logging
 logging.basicConfig(level=logging.DEBUG)
 
@@ -50,7 +51,7 @@ def get_next_race() -> Response:
     """
     fastf1.Cache.enable_cache('cache')
 
-    year = int(request.args.get("year", 2025))
+    year = int(request.args.get("year", date.today().year))
     schedule_df = fastf1.get_event_schedule(year)
     schedule = schedule_df.to_dict('records')
 
